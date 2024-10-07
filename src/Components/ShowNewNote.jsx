@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 
 function ShowNewNote({ createNewNoteData, setShowNewNote }) {
   const [name, setName] = useState("");
   const [currentColor, setColor] = useState("#B38BFA");
+  const modalRef = useRef(null);
 
   const AllColors = [
     "#B38BFA",
@@ -14,9 +15,29 @@ function ShowNewNote({ createNewNoteData, setShowNewNote }) {
     "#6691FF",
   ];
 
+  useEffect(() => {
+    // Function to handle clicks outside of the modal
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setShowNewNote(false);
+      }
+    };
+
+    // Add event listener for clicks
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setShowNewNote]);
+
   return (
     <div className="flex items-center bg-black bg-opacity-50 z-[100] absolute justify-center w-screen h-screen">
-      <div className="lg:w-[740px] rounded-xl md:w-[500px] w-[90vw] relative lg:h-[317px] md:h-[55vh] h-[60vh]  bg-white p-5 px-10 flex flex-col items-start justify-start gap-5">
+      <div
+        ref={modalRef}
+        className="lg:w-[740px] rounded-xl md:w-[500px] w-[90vw] relative lg:h-[317px] md:h-[55vh] h-[60vh]  bg-white p-5 px-10 flex flex-col items-start justify-start gap-5"
+      >
         <div className="w-full items-end justify-end absolute right-5 flex">
           <IoClose
             onClick={() => setShowNewNote(false)}
